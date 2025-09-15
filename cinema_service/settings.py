@@ -21,10 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv(
-    "SECRET_KEY",
-    "django-insecure-6vubhk2$++agnctay_4pxy_8cq)mosmn(*-#2b^v4cgsh-^!i3",
-)
+SECRET_KEY = os.getenv("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "0").lower() in {"1", "true", "yes", "on"}
@@ -82,42 +79,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "cinema_service.wsgi.application"
 
-
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
-
-def _db_from_env():
-    url = os.getenv("DATABASE_URL")
-    if url:
-        parsed = urlparse(url)
-        engine = {
-            "postgres": "django.db.backends.postgresql",
-            "postgresql": "django.db.backends.postgresql",
-            "postgresql_psycopg2": "django.db.backends.postgresql",
-        }.get(parsed.scheme, None)
-        if not engine:
-            raise ValueError(
-                f"Unsupported DB scheme in DATABASE_URL: {parsed.scheme}"
-            )
-        return {
-            "ENGINE": engine,
-            "NAME": unquote(parsed.path.lstrip("/")),
-            "USER": unquote(parsed.username or ""),
-            "PASSWORD": unquote(parsed.password or ""),
-            "HOST": parsed.hostname or "",
-            "PORT": str(parsed.port or ""),
-        }
-
-    # Fallback to discrete variables
-    return {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("DB_NAME", "cinema_db"),
-        "USER": os.getenv("DB_USER", "cinema_user"),
-        "PASSWORD": os.getenv("DB_PASSWORD", "cinema_password"),
-        "HOST": os.getenv("DB_HOST", "db"),
-        "PORT": str(os.getenv("DB_PORT", "5432")),
-    }
-
 
 DATABASES = {
     "default": {
@@ -163,7 +126,7 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
-USE_TZ = False
+USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.0/howto/static-files/
